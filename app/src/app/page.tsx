@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import AuthButton from "@/components/AuthButton";
 import WalletButton from "@/components/WalletButton";
