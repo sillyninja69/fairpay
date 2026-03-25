@@ -9,12 +9,21 @@ import { getProgram, fetchEscrowByAddress, toSol } from "@/lib/program";
 import { EscrowAccount } from "@/types/escrow";
 import DisputePanel from "@/components/DisputePanel";
 
+type CompletionCheck = {
+  completed: boolean;
+  confidence: number;
+  reasoning: string;
+  missingItems: string[];
+};
+
 export default function JobDetails() {
   const params = useParams<{ escrow_address: string }>();
   const wallet = useWallet();
   const [escrow, setEscrow] = useState<EscrowAccount | null>(null);
   const [loading, setLoading] = useState(false);
   const [resolving, setResolving] = useState(false);
+  const [checkingCompletion, setCheckingCompletion] = useState(false);
+  const [completionCheck, setCompletionCheck] = useState<CompletionCheck | null>(null);
 
   async function load() {
     if (!wallet.connected) return;
@@ -129,6 +138,42 @@ export default function JobDetails() {
     }
   }
 
+  async function verifyCompletionWithAi() {
+    setCheckingCompletion(true);
+    try {
+      const response = await fetch("/api/verify-completion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jobTitle: escrowData.jobTitle,
+          jobDescription: escrowData.jobDescription,
+          workDescription: escrowData.workDescription,
+          workLink: escrowData.workLink,
+          clientClaim: escrowData.clientClaim,
+          freelancerClaim: escrowData.freelancerClaim,
+        }),
+      });
+
+      const payload = (await response.json()) as CompletionCheck & { error?: string };
+      if (!response.ok) {
+        throw new Error(payload.error || "Failed to verify completion");
+      }
+
+      setCompletionCheck({
+        completed: Boolean(payload.completed),
+        confidence: Number(payload.confidence) || 0,
+        reasoning: String(payload.reasoning || "No reasoning provided."),
+        missingItems: Array.isArray(payload.missingItems) ? payload.missingItems : [],
+      });
+
+      toast.success("AI completion check finished");
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setCheckingCompletion(false);
+    }
+  }
+
   return (
     <section className="space-y-6">
       <div className="rounded-xl border border-white/10 bg-white/5 p-5">
@@ -152,9 +197,47 @@ export default function JobDetails() {
       )}
 
       {isClient && escrow.state === "workSubmitted" && (
-        <button className="btn-primary" onClick={approveWork} disabled={loading}>
-          {loading ? "Approving..." : "Approve Work & Release Funds"}
-        </button>
+        <div className="space-y-3">
+          <button className="btn-primary" onClick={approveWork} disabled={loading}>
+            {loading ? "Approving..." : "Approve Work & Release Funds"}
+          </button>
+
+          <button
+            className="rounded-xl border border-[#58a7ff]/40 bg-[#111b31] px-4 py-2 font-semibold text-white transition hover:bg-[#18274a]"
+            onClick={verifyCompletionWithAi}
+            disabled={checkingCompletion}
+          >
+            {checkingCompletion ? "AI verifying..." : "AI Verify Completion"}
+          </button>
+        </div>
+      )}
+
+      {(isClient || isFreelancer) && escrow.state === "workSubmitted" && completionCheck && (
+        <div
+          className={[
+            "rounded-xl border p-5",
+            completionCheck.completed
+              ? "border-[#14F195]/40 bg-[#14F195]/10"
+              : "border-[#ff7e33]/40 bg-[#ff7e33]/10",
+          ].join(" ")}
+        >
+          <h3 className="text-lg font-semibold text-white">AI Completion Verdict</h3>
+          <p className="mt-2 text-zinc-100">
+            Result: {completionCheck.completed ? "Completed" : "Not completed"}
+          </p>
+          <p className="text-zinc-200">
+            Confidence: {(completionCheck.confidence * 100).toFixed(0)}%
+          </p>
+          <p className="mt-2 text-zinc-200">{completionCheck.reasoning}</p>
+
+          {completionCheck.missingItems.length > 0 && (
+            <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-200">
+              {completionCheck.missingItems.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
 
       {(isClient || isFreelancer) &&

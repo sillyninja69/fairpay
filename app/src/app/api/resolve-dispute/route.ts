@@ -19,9 +19,19 @@ export async function POST(request: NextRequest) {
       freelancer,
     } = body;
 
+    const geminiApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    if (!geminiApiKey) {
+      return NextResponse.json(
+        { error: "Missing GEMINI_API_KEY (or GOOGLE_API_KEY)" },
+        { status: 500 }
+      );
+    }
+
+    const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+
     // ── Gemini AI Judge ──────────────────────────────────────────
     const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiApiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
