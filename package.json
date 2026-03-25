@@ -1,0 +1,14 @@
+{
+  "name": "fairpay-workspace",
+  "private": true,
+  "scripts": {
+    "test:anchor": "anchor test",
+    "build:app": "npm --prefix app run build",
+    "dev:app": "npm --prefix app run dev"
+  },
+  "devDependencies": {
+    "@coral-xyz/anchor": "^0.30.1",
+    "ts-mocha": "^10.0.0",
+    "typescript": "^5.9.3"
+  }
+}

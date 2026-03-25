@@ -1,0 +1,12 @@
+[
+  {
+    "escrowAddress": "C5oEH3cDZAwejxmW46fkEZrg7fzVvdXRv216zsLPZ6h2",
+    "signature": "3HL2JixXmfqL3HBDgBi1yrNXpvH4PzxSaTWEs8M9jjCLfLw2V2LATYvAHNHx7dB6Bu2pWisZN3u1pRt7KynXSNF6",
+    "client": "5z97pJ4aR8PhaYmQTcR2nJdoWrrK5JYwQvwnnVxAMW51",
+    "freelancer": "5z97pJ4aR8PhaYmQTcR2nJdoWrrK5JYwQvwnnVxAMW51",
+    "jobTitle": "website ",
+    "jobDescription": "website",
+    "amountLamports": 1000000,
+    "createdAt": "2026-03-25T18:07:24.457Z"
+  }
+]

@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+:root {
+  --background: #080b14;
+  --foreground: #f4f7ff;
+  --surface: #0f1524;
+  --surface-2: #111b31;
+  --line: rgb(176 209 255 / 0.16);
+  --primary: #ff7e33;
+  --secondary: #2be7c8;
+  --accent: #58a7ff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-display);
+  --font-mono: var(--font-mono-custom);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #080b14;
+    --foreground: #f4f7ff;
+  }
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(110% 80% at 90% -10%, rgb(88 167 255 / 0.3) 0%, transparent 55%),
+    radial-gradient(90% 70% at -10% 10%, rgb(255 126 51 / 0.2) 0%, transparent 60%),
+    linear-gradient(140deg, #06080f 0%, #080b14 45%, #090f1d 100%);
+  color: var(--foreground);
+  font-family: var(--font-display), sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.03) 1px, transparent 1px);
+  background-size: 38px 38px;
+  mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
+}
+
+.fp-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.fp-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(circle at 50% 10%, rgb(43 231 200 / 0.12), transparent 55%);
+}
+
+.glass {
+  background: linear-gradient(165deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.03));
+  border: 1px solid var(--line);
+  backdrop-filter: blur(12px);
+}
+
+.title-gradient {
+  background: linear-gradient(90deg, #fff 0%, #c6dcff 45%, #8ee8da 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ambient-float {
+  animation: ambient-float 7s ease-in-out infinite;
+}
+
+.slide-in {
+  animation: slide-in 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.slide-delay-1 {
+  animation-delay: 120ms;
+}
+
+.slide-delay-2 {
+  animation-delay: 240ms;
+}
+
+.slide-delay-3 {
+  animation-delay: 360ms;
+}
+
+@keyframes ambient-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--line);
+  background: rgb(9 15 29 / 0.8);
+  padding: 0.75rem 0.9rem;
+  color: var(--foreground);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--accent);
+}
+
+.btn-primary {
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, var(--primary), #ffb15d);
+  padding: 0.7rem 1rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+}
