@@ -2,13 +2,12 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { SessionUser } from "@/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<SessionUser | null>(null);
 
@@ -48,7 +47,7 @@ export default function LoginPage() {
 
       setCurrentUser(payload.user as SessionUser);
       toast.success("Logged in");
-      const next = searchParams.get("next") || "/";
+  const next = new URLSearchParams(window.location.search).get("next") || "/";
       router.push(next);
       router.refresh();
     } catch (error) {
